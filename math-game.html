@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+
+  <body>
+    <!--     
+Multiplation Math Game
+Objectives:
+	Quick Review of Basic HTML/JavaScript
+	Make data persistent using browser for storage
+Requirements:
+	Make a game that gives the user multiplication problems and four answer choices for each one.
+	Each time they choose the correct answer a displayed tally of their score increases by one.
+	The high score for the game should also be displayed.'The game should begin when they click a "start" button.
+	After 10 seconds, the game is over.
+	If their score is higher than the high score it becomes the new high score.
+	The high score should be persistent (meaning it will still be there the next time they visit the site using that browser and device) -->
+
+    <script>
+      let timeLeft = 10;
+      let timerInterval;
+      let score = 0;
+      let highScore = 0;
+      let correctAnswer = 0;
+
+      window.onload = function () {
+        let scoreFromBrowser = localStorage.getItem("highScore");
+        if (scoreFromBrowser != undefined) highScore = scoreFromBrowser;
+        document.getElementById("highScore").innerHTML =
+          "High Score: " + highScore;
+      };
+
+      function startGame() {
+        nextQuestion();
+
+        document.getElementById("startBtn").disabled = true;
+
+        let timeDisplay = document.getElementById("timeDisplay");
+        timeDisplay.hidden = false;
+        timerInterval = setInterval(function () {
+          timeLeft -= 1;
+
+          timeDisplay.innerHTML = "Time Left: " + timeLeft;
+          if (timeLeft == 0) {
+            clearInterval(timerInterval);
+            document.getElementById("btn1").disabled = true;
+            document.getElementById("btn2").disabled = true;
+            document.getElementById("btn3").disabled = true;
+            document.getElementById("btn4").disabled = true;
+          }
+        }, 1000);
+      }
+
+      function nextQuestion() {
+        let operationDiv = document.getElementById("operation");
+        let firstNum = Math.ceil(Math.random() * 12);
+        let secondNum = Math.ceil(Math.random() * 12);
+        correctAnswer = firstNum * secondNum;
+        operationDiv.innerHTML = firstNum + "*" + secondNum;
+
+        // set the buttons to have random answers and one should be the
+        // correct answer
+
+        let wrongAnswer1 =
+          Math.ceil(Math.random() * 12) * Math.ceil(Math.random() * 12);
+        let wrongAnswer2 =
+          Math.ceil(Math.random() * 12) * Math.ceil(Math.random() * 12);
+        let wrongAnswer3 =
+          Math.ceil(Math.random() * 12) * Math.ceil(Math.random() * 12);
+        let wrongAnswer4 =
+          Math.ceil(Math.random() * 12) * Math.ceil(Math.random() * 12);
+
+        document.getElementById("btn1").innerHTML = wrongAnswer1;
+        document.getElementById("btn2").innerHTML = wrongAnswer2;
+        document.getElementById("btn3").innerHTML = wrongAnswer3;
+        document.getElementById("btn4").innerHTML = wrongAnswer4;
+
+        let correctAnswerIndex = Math.floor(Math.random() * 4) + 1; // 1 2 3 4
+        let correctAnswerID = "btn" + correctAnswerIndex;
+        document.getElementById(correctAnswerID).innerHTML = correctAnswer;
+      }
+
+      function checkAnswer(buttonIndex) {
+        let answer = document.getElementById("btn" + buttonIndex).innerHTML;
+        if (answer == correctAnswer) score += 1;
+        document.getElementById("currentScore").innerHTML =
+          "Current Score: " + score;
+        if (score > highScore) highScore = score;
+        localStorage.setItem("highScore", highScore);
+        document.getElementById("highScore").innerHTML =
+          "High Score: " + highScore;
+        nextQuestion();
+      }
+    </script>
+    <style>
+      button {
+        font-size: 36;
+        padding: 24;
+      }
+
+      .big {
+        font-size: 36;
+        padding: 24;
+      }
+    </style>
+
+    <div id="highScore">High Score: 0</div>
+    <div id="currentScore">Current Score: 0</div>
+    <button id="startBtn" onclick="startGame()">START</button>
+
+    <div id="timeDisplay" hidden>Time Left: 10</div>
+
+    <br />
+    What is the answer?
+    <br />
+    <div class="big" id="operation">0 * 0</div>
+    <button onclick="checkAnswer(1)" id="btn1">0</button>
+    <button onclick="checkAnswer(2)" id="btn2">0</button>
+    <button onclick="checkAnswer(3)" id="btn3">0</button>
+    <button onclick="checkAnswer(4)" id="btn4">0</button>
+  </body>
+</html>
